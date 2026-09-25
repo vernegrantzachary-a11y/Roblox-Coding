@@ -1,33 +1,52 @@
--- SkyBuilder.server.luau
-local Lighting = game:GetService("Lighting")
+-- MapBuilder.server.luau
+local Workspace = game:GetService("Workspace")
 
-Lighting.ClockTime = 0
-Lighting.Brightness = 0.5
-Lighting.Ambient = Color3.fromRGB(15, 10, 25)
-Lighting.OutdoorAmbient = Color3.fromRGB(20, 10, 30)
-
--- Clear old elements
-for _, child in ipairs(Lighting:GetChildren()) do
-    if child:IsA("Atmosphere") or child:IsA("Sky") or child:IsA("ColorCorrectionEffect") then
-        child:Destroy()
-    end
+local oldMap = Workspace:FindFirstChild("ProceduralArena")
+if oldMap then
+    oldMap:Destroy()
 end
 
--- Heavy thick atmosphere to cloak the sky box entirely in void fog
-local atmosphere = Instance.new("Atmosphere")
-atmosphere.Density = 0.75
-atmosphere.Offset = 0
-atmosphere.Color = Color3.fromRGB(15, 8, 25)
-atmosphere.Decay = Color3.fromRGB(5, 2, 10)
-atmosphere.Glare = 0
-atmosphere.Haze = 0
-atmosphere.Parent = Lighting
+local mapFolder = Instance.new("Folder")
+mapFolder.Name = "ProceduralArena"
+mapFolder.Parent = Workspace
 
--- Push a heavy purple-dark color correction to shift any remaining blue
-local colorCorrection = Instance.new("ColorCorrectionEffect")
-colorCorrection.TintColor = Color3.fromRGB(160, 130, 255)
-colorCorrection.Saturation = -0.6
-colorCorrection.Contrast = 0.3
-colorCorrection.Parent = Lighting
+local floor = Instance.new("Part")
+floor.Name = "ArenaFloor"
+floor.Size = Vector3.new(300, 2, 300)
+floor.Position = Vector3.new(0, 0, 0)
+floor.Anchored = true
+floor.BrickColor = BrickColor.new("Dark stone grey")
+floor.Material = Enum.Material.Concrete
+floor.Parent = mapFolder
 
-print("Void fog atmosphere enforced!")
+local wallThickness = 6
+local wallHeight = 40
+local arenaSize = 300
+local halfSize = arenaSize / 2
+
+local function createWall(size, position)
+    local wall = Instance.new("Part")
+    wall.Size = size
+    wall.Position = position
+    wall.Anchored = true
+    wall.BrickColor = BrickColor.new("Medium stone grey")
+    wall.Material = Enum.Material.Slate
+    wall.Parent = mapFolder
+end
+
+createWall(Vector3.new(arenaSize, wallHeight, wallThickness), Vector3.new(0, wallHeight/2, -halfSize))
+createWall(Vector3.new(arenaSize, wallHeight, wallThickness), Vector3.new(0, wallHeight/2, halfSize))
+createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(-halfSize, wallHeight/2, 0))
+createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(halfSize, wallHeight/2, 0))
+
+-- Locked position, changed update marker color to green for this iteration
+local updateMarker = Instance.new("Part")
+updateMarker.Name = "UpdateMarkerProp"
+updateMarker.Size = Vector3.new(12, 12, 12)
+updateMarker.Position = Vector3.new(100, 6, -100)
+updateMarker.Anchored = true
+updateMarker.BrickColor = BrickColor.new("Medium green")
+updateMarker.Material = Enum.Material.Neon
+updateMarker.Parent = mapFolder
+
+print("Arena generated with green update marker!")
