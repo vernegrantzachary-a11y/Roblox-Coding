@@ -5,20 +5,20 @@ local mapFolder = Instance.new("Folder")
 mapFolder.Name = "ProceduralArena"
 mapFolder.Parent = Workspace
 
--- 1. Build the main fighting floor
+-- 1. Build a much bigger fighting floor (e.g., 300x300 instead of 120x120)
 local floor = Instance.new("Part")
 floor.Name = "ArenaFloor"
-floor.Size = Vector3.new(120, 2, 120)
+floor.Size = Vector3.new(300, 2, 300)
 floor.Position = Vector3.new(0, 0, 0)
 floor.Anchored = true
 floor.BrickColor = BrickColor.new("Dark stone grey")
 floor.Material = Enum.Material.Concrete
 floor.Parent = mapFolder
 
--- 2. Build perimeter walls
-local wallThickness = 4
-local wallHeight = 15
-local arenaSize = 120
+-- 2. Build much higher perimeter walls (e.g., 40 studs high)
+local wallThickness = 6
+local wallHeight = 40
+local arenaSize = 300
 local halfSize = arenaSize / 2
 
 local function createWall(size, position)
@@ -39,4 +39,4 @@ createWall(Vector3.new(arenaSize, wallHeight, wallThickness), Vector3.new(0, wal
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(-halfSize, wallHeight/2, 0))
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(halfSize, wallHeight/2, 0))
 
-print("Simple base arena generated!")
+print("Massive arena generated!")
