@@ -18,4 +18,4 @@ jobs:
       - name: Build and Push Headless to Roblox Cloud
         run: |
           rojo build --output game.rbxl
-          rbxcloud experience publish -f game.rbxl -p ${{ secrets.ROBLOX_PLACE_ID }} -u ${{ secrets.ROBLOX_UNIVERSE_ID }} -t published -k ${{ secrets.ROBLOX_API_KEY }}
+          rbxcloud experience publish --filename game.rbxl --place-id ${{ secrets.ROBLOX_PLACE_ID }} --universe-id ${{ secrets.ROBLOX_UNIVERSE_ID }} --version-type published --api-key ${{ secrets.ROBLOX_API_KEY }}
