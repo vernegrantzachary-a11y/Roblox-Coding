@@ -1,0 +1,21 @@
+name: Auto Cloud Sync to Roblox
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Aftman Tools
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Build and Push Headless to Roblox Cloud
+        run: |
+          rojo build --output game.rbxl
+          rbxcloud experience publish -f game.rbxl -p ${{ secrets.ROBLOX_PLACE_ID }} -u ${{ secrets.ROBLOX_UNIVERSE_ID }} -t published -k ${{ secrets.ROBLOX_API_KEY }}
