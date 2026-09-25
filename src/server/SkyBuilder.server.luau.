@@ -1,35 +1,33 @@
 -- SkyBuilder.server.luau
 local Lighting = game:GetService("Lighting")
 
--- 1. Set time to midnight to remove the sun and enable a night canvas
 Lighting.ClockTime = 0
-Lighting.Brightness = 1
-Lighting.Ambient = Color3.fromRGB(20, 10, 35)
-Lighting.OutdoorAmbient = Color3.fromRGB(30, 15, 45)
-Lighting.GlobalShadows = true
+Lighting.Brightness = 0.5
+Lighting.Ambient = Color3.fromRGB(15, 10, 25)
+Lighting.OutdoorAmbient = Color3.fromRGB(20, 10, 30)
 
--- 2. Clear out old atmosphere or sky objects
+-- Clear old elements
 for _, child in ipairs(Lighting:GetChildren()) do
     if child:IsA("Atmosphere") or child:IsA("Sky") or child:IsA("ColorCorrectionEffect") then
         child:Destroy()
     end
 end
 
--- 3. Add a thick, performance-friendly dark purple atmosphere for the void fog
+-- Heavy thick atmosphere to cloak the sky box entirely in void fog
 local atmosphere = Instance.new("Atmosphere")
-atmosphere.Density = 0.45
+atmosphere.Density = 0.75
 atmosphere.Offset = 0
-atmosphere.Color = Color3.fromRGB(15, 10, 25)
+atmosphere.Color = Color3.fromRGB(15, 8, 25)
 atmosphere.Decay = Color3.fromRGB(5, 2, 10)
 atmosphere.Glare = 0
 atmosphere.Haze = 0
 atmosphere.Parent = Lighting
 
--- 4. Punch up the contrast and color tone for a stark void look
+-- Push a heavy purple-dark color correction to shift any remaining blue
 local colorCorrection = Instance.new("ColorCorrectionEffect")
-colorCorrection.TintColor = Color3.fromRGB(180, 150, 255)
-colorCorrection.Saturation = -0.4
-colorCorrection.Contrast = 0.2
+colorCorrection.TintColor = Color3.fromRGB(160, 130, 255)
+colorCorrection.Saturation = -0.6
+colorCorrection.Contrast = 0.3
 colorCorrection.Parent = Lighting
 
-print("Deep-space void atmosphere generated!")
+print("Void fog atmosphere enforced!")
