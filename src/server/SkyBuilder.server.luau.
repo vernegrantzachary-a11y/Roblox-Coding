@@ -1,4 +1,5 @@
 -- MapBuilder.server.luau
+print("--- SKY BUILDER SCRIPT IS RUNNING ---")
 local Workspace = game:GetService("Workspace")
 
 local oldMap = Workspace:FindFirstChild("ProceduralArena")
