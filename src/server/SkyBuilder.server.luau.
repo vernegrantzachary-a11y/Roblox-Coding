@@ -1,35 +1,35 @@
 -- SkyBuilder.server.luau
 local Lighting = game:GetService("Lighting")
 
--- 1. Optimize lighting for low-end devices while keeping visibility sharp
-Lighting.Brightness = 1.5
-Lighting.Ambient = Color3.fromRGB(30, 20, 45) -- Deep, muted purple ambient light
-Lighting.OutdoorAmbient = Color3.fromRGB(40, 30, 60)
-Lighting.GlobalShadows = true -- Keep minimal shadows for performance
+-- 1. Set time to midnight to remove the sun and enable a night canvas
+Lighting.ClockTime = 0
+Lighting.Brightness = 1
+Lighting.Ambient = Color3.fromRGB(20, 10, 35)
+Lighting.OutdoorAmbient = Color3.fromRGB(30, 15, 45)
+Lighting.GlobalShadows = true
 
--- 2. Clear out any default atmosphere or sky objects
+-- 2. Clear out old atmosphere or sky objects
 for _, child in ipairs(Lighting:GetChildren()) do
     if child:IsA("Atmosphere") or child:IsA("Sky") or child:IsA("ColorCorrectionEffect") then
         child:Destroy()
     end
 end
 
--- 3. Create a clean, low-overhead black-purple void sky
-local voidSky = Instance.new("Sky")
-voidSky.Name = "VoidSky"
--- Setting asset IDs to 0 leaves them as a clean, solid dark default tone
-voidSky.SkyboxBk = "rbxassetid://0"
-voidSky.SkyboxDn = "rbxassetid://0"
-voidSky.SkyboxFt = "rbxassetid://0"
-voidSky.SkyboxLf = "rbxassetid://0"
-voidSky.SkyboxRt = "rbxassetid://0"
-voidSky.SkyboxUp = "rbxassetid://0"
-voidSky.Parent = Lighting
+-- 3. Add a thick, performance-friendly dark purple atmosphere for the void fog
+local atmosphere = Instance.new("Atmosphere")
+atmosphere.Density = 0.45
+atmosphere.Offset = 0
+atmosphere.Color = Color3.fromRGB(15, 10, 25)
+atmosphere.Decay = Color3.fromRGB(5, 2, 10)
+atmosphere.Glare = 0
+atmosphere.Haze = 0
+atmosphere.Parent = Lighting
 
--- 4. Add a subtle color correction to tie the void aesthetic together
+-- 4. Punch up the contrast and color tone for a stark void look
 local colorCorrection = Instance.new("ColorCorrectionEffect")
-colorCorrection.TintColor = Color3.fromRGB(200, 180, 255)
-colorCorrection.Saturation = -0.3
+colorCorrection.TintColor = Color3.fromRGB(180, 150, 255)
+colorCorrection.Saturation = -0.4
+colorCorrection.Contrast = 0.2
 colorCorrection.Parent = Lighting
 
-print("Performance-friendly void sky generated!")
+print("Deep-space void atmosphere generated!")
