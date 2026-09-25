@@ -39,14 +39,14 @@ createWall(Vector3.new(arenaSize, wallHeight, wallThickness), Vector3.new(0, wal
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(-halfSize, wallHeight/2, 0))
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(halfSize, wallHeight/2, 0))
 
--- Locked position, changed update marker color to green for this iteration
+-- Locked position with explicit Neon Green color
 local updateMarker = Instance.new("Part")
 updateMarker.Name = "UpdateMarkerProp"
 updateMarker.Size = Vector3.new(12, 12, 12)
 updateMarker.Position = Vector3.new(100, 6, -100)
 updateMarker.Anchored = true
-updateMarker.BrickColor = BrickColor.new("Medium green")
+updateMarker.Color = Color3.fromRGB(0, 255, 60) -- True Neon Green
 updateMarker.Material = Enum.Material.Neon
 updateMarker.Parent = mapFolder
 
-print("Arena generated with green update marker!")
+print("Massive arena and neon green update marker generated!")
