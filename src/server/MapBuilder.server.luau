@@ -6,29 +6,42 @@ local mapFolder = Instance.new("Folder")
 mapFolder.Name = "ProceduralArena"
 mapFolder.Parent = Workspace
 
--- 1. Build the main fighting floor
-local floor = Instance.new("Part")
-floor.Name = "ArenaFloor"
-floor.Size = Vector3.new(120, 2, 120) -- Width, Thickness, Length
-floor.Position = Vector3.new(0, 0, 0)
-floor.Anchored = true
-floor.BrickColor = BrickColor.new("Dark stone grey")
-floor.Material = Enum.Material.Concrete
-floor.Parent = mapFolder
-
--- 2. Build perimeter walls for cover and boundaries
-local wallThickness = 4
-local wallHeight = 15
 local arenaSize = 120
 local halfSize = arenaSize / 2
+
+-- 1. Build a detailed, tiled floor
+local tileSize = 10
+for x = -halfSize, halfSize - tileSize, tileSize do
+    for z = -halfSize, halfSize - tileSize, tileSize do
+        local tile = Instance.new("Part")
+        tile.Size = Vector3.new(tileSize, 2, tileSize)
+        -- Center each tile properly on the grid
+        tile.Position = Vector3.new(x + tileSize/2, 0, z + tileSize/2)
+        tile.Anchored = true
+        tile.Material = Enum.Material.Concrete
+        
+        -- Alternate tile colors for a cool tactical grid pattern
+        if (x / tileSize + z / tileSize) % 2 == 0 then
+            tile.BrickColor = BrickColor.new("Dark stone grey")
+        else
+            tile.BrickColor = BrickColor.new("Medium stone grey")
+        end
+        
+        tile.Parent = mapFolder
+    end
+end
+
+-- 2. Build much higher perimeter walls for the battlegrounds
+local wallThickness = 4
+local wallHeight = 40 -- Made much higher!
 
 local function createWall(size, position)
     local wall = Instance.new("Part")
     wall.Size = size
     wall.Position = position
     wall.Anchored = true
-    wall.BrickColor = BrickColor.new("Medium stone grey")
-    wall.Material = Enum.Material.Slate
+    wall.BrickColor = BrickColor.new("Black")
+    wall.Material = Enum.Material.SmoothPlastic
     wall.Parent = mapFolder
 end
 
@@ -40,23 +53,4 @@ createWall(Vector3.new(arenaSize, wallHeight, wallThickness), Vector3.new(0, wal
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(-halfSize, wallHeight/2, 0))
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(halfSize, wallHeight/2, 0))
 
--- 3. Add internal cover pillars/obstacles so players have tactical spots to hide
-local pillarPositions = {
-    Vector3.new(-30, 5, -30),
-    Vector3.new(30, 5, -30),
-    Vector3.new(-30, 5, 30),
-    Vector3.new(30, 5, 30),
-    Vector3.new(0, 5, 0) -- Center pillar/obelisk
-}
-
-for _, pos in ipairs(pillarPositions) do
-    local pillar = Instance.new("Part")
-    pillar.Size = Vector3.new(8, 10, 8)
-    pillar.Position = pos
-    pillar.Anchored = true
-    pillar.BrickColor = BrickColor.new("Persian blue")
-    pillar.Material = Enum.Material.Neon
-    pillar.Parent = mapFolder
-end
-
-print("Battlegrounds arena successfully generated!")
+print("Detailed high-wall arena successfully generated!")
