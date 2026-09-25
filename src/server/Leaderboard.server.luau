@@ -17,3 +17,4 @@ local function onPlayerAdded(player)
 end
 
 Players.PlayerAdded:Connect(onPlayerAdded)
+-- Force update check
