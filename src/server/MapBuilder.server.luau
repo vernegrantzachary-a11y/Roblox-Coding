@@ -1,7 +1,7 @@
 -- MapBuilder.server.luau
+print("--- MAP BUILDER SCRIPT IS RUNNING ---")
 local Workspace = game:GetService("Workspace")
 
--- Clear old arena if it exists to prevent duplication
 local oldMap = Workspace:FindFirstChild("ProceduralArena")
 if oldMap then
     oldMap:Destroy()
@@ -11,7 +11,7 @@ local mapFolder = Instance.new("Folder")
 mapFolder.Name = "ProceduralArena"
 mapFolder.Parent = Workspace
 
--- 1. Build the massive fighting floor
+-- Arena Floor
 local floor = Instance.new("Part")
 floor.Name = "ArenaFloor"
 floor.Size = Vector3.new(300, 2, 300)
@@ -21,7 +21,7 @@ floor.BrickColor = BrickColor.new("Dark stone grey")
 floor.Material = Enum.Material.Concrete
 floor.Parent = mapFolder
 
--- 2. Build high perimeter walls
+-- Perimeter Walls
 local wallThickness = 6
 local wallHeight = 40
 local arenaSize = 300
@@ -42,14 +42,42 @@ createWall(Vector3.new(arenaSize, wallHeight, wallThickness), Vector3.new(0, wal
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(-halfSize, wallHeight/2, 0))
 createWall(Vector3.new(wallThickness, wallHeight, arenaSize), Vector3.new(halfSize, wallHeight/2, 0))
 
--- 3. THE UPDATE MARKER PROP (Locked position, color changed to blue for this update)
+-- Neon Green Update Marker
 local updateMarker = Instance.new("Part")
 updateMarker.Name = "UpdateMarkerProp"
 updateMarker.Size = Vector3.new(12, 12, 12)
-updateMarker.Position = Vector3.new(100, 6, -100) -- Locked coordinate position
+updateMarker.Position = Vector3.new(100, 6, -100)
 updateMarker.Anchored = true
-updateMarker.BrickColor = BrickColor.new("Cyan") -- Blue update color
+updateMarker.Color = Color3.fromRGB(0, 255, 60)
 updateMarker.Material = Enum.Material.Neon
 updateMarker.Parent = mapFolder
 
-print("Arena updated with locked position and blue marker color!")
+-- Gameplay: Spawn Location
+local spawnLocation = Instance.new("SpawnLocation")
+spawnLocation.Name = "GameSpawn"
+spawnLocation.Size = Vector3.new(10, 1, 10)
+spawnLocation.Position = Vector3.new(0, 2, 0)
+spawnLocation.Anchored = true
+spawnLocation.BrickColor = BrickColor.new("Deep blue")
+spawnLocation.Material = Enum.Material.Neon
+spawnLocation.Parent = mapFolder
+
+-- Gameplay: Interactive Target Dummy (Touch to print points/score concept)
+local targetDummy = Instance.new("Part")
+targetDummy.Name = "TargetDummy"
+targetDummy.Size = Vector3.new(6, 12, 6)
+targetDummy.Position = Vector3.new(-100, 7, -100)
+targetDummy.Anchored = true
+targetDummy.BrickColor = BrickColor.new("Hot pink")
+targetDummy.Material = Enum.Material.Neon
+targetDummy.Parent = mapFolder
+
+targetDummy.Touched:Connect(function(hit)
+    local character = hit.Parent
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        print("Player interacted with the target dummy!")
+    end
+end)
+
+print("Arena generated with spawn point and interactive target dummy.")
