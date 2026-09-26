@@ -58,16 +58,42 @@ local function setupCombatRig(character)
         print("R6 rig detected")
         isR6 = true
         local torso = character:WaitForChild("Torso")
-        rightShoulder = torso:WaitForChild("Right Shoulder")
-        leftShoulder = torso:WaitForChild("Left Shoulder")
-        print("R6 shoulders found")
+
+        -- TEMP DEBUG: list every Motor6D actually inside Torso
+        for _, child in ipairs(torso:GetChildren()) do
+            if child:IsA("Motor6D") then
+                print("Found Motor6D:", child.Name)
+            end
+        end
+
+        rightShoulder = torso:FindFirstChild("Right Shoulder")
+        leftShoulder = torso:FindFirstChild("Left Shoulder")
+        if rightShoulder and leftShoulder then
+            print("R6 shoulders found")
+        else
+            print("ERROR: R6 shoulders not found under expected names")
+        end
+
     elseif rigType == Enum.HumanoidRigType.R15 then
         print("R15 rig detected")
         isR6 = false
         local upperTorso = character:WaitForChild("UpperTorso")
-        rightShoulder = upperTorso:WaitForChild("RightShoulder")
-        leftShoulder = upperTorso:WaitForChild("LeftShoulder")
-        print("R15 shoulders found")
+
+        -- TEMP DEBUG: list every Motor6D actually inside UpperTorso
+        for _, child in ipairs(upperTorso:GetChildren()) do
+            if child:IsA("Motor6D") then
+                print("Found Motor6D:", child.Name)
+            end
+        end
+
+        rightShoulder = upperTorso:FindFirstChild("RightShoulder")
+        leftShoulder = upperTorso:FindFirstChild("LeftShoulder")
+        if rightShoulder and leftShoulder then
+            print("R15 shoulders found")
+        else
+            print("ERROR: R15 shoulders not found under expected names")
+        end
+
     else
         print("ERROR: Unknown rig type:", rigType)
     end
