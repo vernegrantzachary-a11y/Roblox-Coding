@@ -15,10 +15,13 @@ jobs:
       - name: Setup Aftman Tools
         uses: ok-nick/setup-aftman@v0.4.2
 
-      - name: Debug rbxcloud commands
-        run: rbxcloud --help
-
-      - name: Build and Push Headless to Roblox Cloud
+      - name: Build and Publish place to Roblox Cloud
         run: |
           rojo build --output game.rbxl
-          rbxcloud place upload --file game.rbxl --place-id 129122438210317 --universe-id 9969726968 --api-key ${{ secrets.ROBLOX_API_KEY }}
+          rbxcloud place publish \
+            --file game.rbxl \
+            --place-id 129122438210317 \
+            --universe-id 9969726968 \
+            --api-key "$ROBLOX_API_KEY"
+        env:
+          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
