@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local camera = workspace.CurrentCamera
+local player = Players.LocalPlayer
 
 -- Ensure RemoteEvent exists
 local combatEvent = ReplicatedStorage:FindFirstChild("PerformAttackEvent")
@@ -16,14 +17,12 @@ if not combatEvent then
     combatEvent.Parent = ReplicatedStorage
 end
 
--- Camera Shake Variables
-local shakeIntensity = 0
-local shakeDuration = 0
+-- Camera Shake Variables (Tuned down intensity to prevent stacking overload)
+local shakeIntensity = 0.25
+local shakeDuration = 0.15
 local shakeTimer = 0
 
 local function triggerCameraImpact()
-    shakeIntensity = 1.2
-    shakeDuration = 0.2
     shakeTimer = shakeDuration
 end
 
@@ -41,6 +40,27 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
+-- Animation Variables for Left/Right Combo Chain
+local leftAnimTrack: AnimationTrack = nil
+local rightAnimTrack: AnimationTrack = nil
+local useRightPunch = false
+
+task.spawn(function()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local animator = humanoid:WaitForChild("Animator")
+
+    -- Load Left Punch Animation
+    local leftAnim = Instance.new("Animation")
+    leftAnim.AnimationId = "rbxassetid://913376220"
+    leftAnimTrack = animator:LoadAnimation(leftAnim)
+
+    -- Load Right Punch Animation
+    local rightAnim = Instance.new("Animation")
+    rightAnim.AnimationId = "rbxassetid://913372543"
+    rightAnimTrack = animator:LoadAnimation(rightAnim)
+end)
+
 -- Direct Input Listener for 'E' Key
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
@@ -48,6 +68,18 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if input.KeyCode == Enum.KeyCode.E then
         print("E key pressed locally!")
         triggerCameraImpact()
-        combatEvent:FireServer("LightPunch")
+
+        -- Alternate between left and right punch animations
+        if useRightPunch then
+            if rightAnimTrack then rightAnimTrack:Play() end
+        else
+            if leftAnimTrack then leftAnimTrack:Play() end
+        end
+
+        -- Fire server with the attack type and the current combo side boolean
+        combatEvent:FireServer("LightPunch", useRightPunch)
+
+        -- Toggle state for the next punch
+        useRightPunch = not useRightPunch
     end
 end)

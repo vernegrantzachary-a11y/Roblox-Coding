@@ -62,22 +62,68 @@ spawnLocation.BrickColor = BrickColor.new("Deep blue")
 spawnLocation.Material = Enum.Material.Neon
 spawnLocation.Parent = mapFolder
 
--- Gameplay: Interactive Target Dummy (Touch to print points/score concept)
-local targetDummy = Instance.new("Part")
-targetDummy.Name = "TargetDummy"
-targetDummy.Size = Vector3.new(6, 12, 6)
-targetDummy.Position = Vector3.new(-100, 7, -100)
-targetDummy.Anchored = true
-targetDummy.BrickColor = BrickColor.new("Hot pink")
-targetDummy.Material = Enum.Material.Neon
-targetDummy.Parent = mapFolder
+-- Gameplay: Interactive Target Dummy using a standard Roblox character model + Health Bar
+task.spawn(function()
+    local success, dummyModel = pcall(function()
+        return game:GetService("Players"):CreateHumanoidModelFromUserId(1)
+    end)
 
-targetDummy.Touched:Connect(function(hit)
-    local character = hit.Parent
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        print("Player interacted with the target dummy!")
+    if success and dummyModel then
+        dummyModel.Name = "TrainingDummy"
+        
+        local rootPart = dummyModel:FindFirstChild("HumanoidRootPart")
+        local head = dummyModel:FindFirstChild("Head") or rootPart
+        local humanoid = dummyModel:FindFirstChildOfClass("Humanoid")
+
+        if rootPart then
+            rootPart.CFrame = CFrame.new(0, 5, -15)
+            rootPart.Anchored = true
+        end
+
+        -- Create BillboardGui Health Bar above the dummy
+        if head then
+            local billboard = Instance.new("BillboardGui")
+            billboard.Name = "HealthGui"
+            billboard.Size = UDim2.new(0, 120, 0, 30)
+            billboard.StudsOffset = Vector3.new(0, 3, 0)
+            billboard.AlwaysOnTop = true
+            billboard.Parent = head
+
+            local bgFrame = Instance.new("Frame")
+            bgFrame.Size = UDim2.new(1, 0, 0, 8)
+            bgFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            bgFrame.BorderSizePixel = 0
+            bgFrame.Parent = billboard
+
+            local cornerBg = Instance.new("UICorner")
+            cornerBg.CornerRadius = UDim.new(1, 0)
+            cornerBg.Parent = bgFrame
+
+            local healthBar = Instance.new("Frame")
+            healthBar.Name = "BarFill"
+            healthBar.Size = UDim2.new(1, 0, 1, 0)
+            healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+            healthBar.BorderSizePixel = 0
+            healthBar.Parent = bgFrame
+
+            local cornerFill = Instance.new("UICorner")
+            cornerFill.CornerRadius = UDim.new(1, 0)
+            cornerFill.Parent = healthBar
+
+            -- Update health bar dynamically when damage is taken
+            if humanoid then
+                humanoid.HealthChanged:Connect(function(newHealth)
+                    local healthPercent = math.clamp(newHealth / humanoid.MaxHealth, 0, 1)
+                    healthBar.Size = UDim2.new(healthPercent, 0, 1, 0)
+                end)
+            end
+        end
+
+        dummyModel.Parent = mapFolder
+        print("Successfully loaded standard Roblox avatar dummy with health bar!")
+    else
+        print("Failed to load avatar dummy model.")
     end
 end)
 
-print("Arena generated with spawn point and interactive target dummy.")
+print("Arena generated with spawn point and avatar target dummy.")

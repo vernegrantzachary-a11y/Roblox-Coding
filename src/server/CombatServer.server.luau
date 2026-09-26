@@ -2,7 +2,7 @@
 print("--- COMBAT SERVER SCRIPT IS RUNNING ---")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Ensure the RemoteEvent exists on the server as well
+-- Ensure the RemoteEvent exists on the server
 local combatEvent = ReplicatedStorage:FindFirstChild("PerformAttackEvent")
 if not combatEvent then
     combatEvent = Instance.new("RemoteEvent")
@@ -23,24 +23,27 @@ local function createPunchEffect(targetPosition)
     attachment.Parent = effectPart
 
     local emitter = Instance.new("ParticleEmitter")
-    emitter.Texture = "rbxassetid://258129463"
-    emitter.Color = ColorSequence.new(Color3.fromRGB(255, 200, 50), Color3.fromRGB(255, 50, 50))
+    -- Using a reliable soft particle asset id
+    emitter.Texture = "rbxassetid://1084889503"
+    emitter.Color = ColorSequence.new(Color3.fromRGB(0, 255, 120), Color3.fromRGB(0, 150, 255)) -- Cyan/Green anime impact
     emitter.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.5),
-        NumberSequenceKeypoint.new(1, 3)
+        NumberSequenceKeypoint.new(0, 0.8),
+        NumberSequenceKeypoint.new(1, 2.5)
     })
     emitter.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0, 0.1),
         NumberSequenceKeypoint.new(1, 1)
     })
-    emitter.Speed = NumberRange.new(15, 25)
-    emitter.SpreadAngle = Vector2.new(45, 45)
+    emitter.Speed = NumberRange.new(10, 20)
+    emitter.SpreadAngle = Vector2.new(60, 60)
     emitter.Lifetime = NumberRange.new(0.2, 0.4)
     emitter.Rate = 0
     emitter.Parent = attachment
 
-    emitter:Emit(25)
+    -- Fire a clean burst
+    emitter:Emit(30)
 
+    -- Quick cleanup
     task.delay(0.5, function()
         effectPart:Destroy()
     end)
@@ -52,11 +55,11 @@ combatEvent.OnServerEvent:Connect(function(player, attackType)
     
     local rootPart = character.HumanoidRootPart
     
-    -- Spawn the particle effect burst in front of the player
+    -- Spawn effect in front of the player
     local hitPos = rootPart.Position + (rootPart.CFrame.LookVector * 4)
     createPunchEffect(hitPos)
     
-    -- Simple hit detection check in front of the player
+    -- Hit detection logic
     for _, otherPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
         if otherPlayer ~= player and otherPlayer.Character then
             local otherRoot = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -64,7 +67,7 @@ combatEvent.OnServerEvent:Connect(function(player, attackType)
             
             if otherRoot and humanoid then
                 local distance = (rootPart.Position - otherRoot.Position).Magnitude
-                if distance <= 8 then -- Hit range
+                if distance <= 8 then
                     humanoid:TakeDamage(10)
                     print(player.Name .. " successfully punched " .. otherPlayer.Name)
                 end
