@@ -16,8 +16,6 @@ jobs:
         uses: ok-nick/setup-aftman@v0.4.2
 
       - name: Build and Push Headless to Roblox Cloud
-        env:
-          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
         run: |
           rojo build --output game.rbxl
-          rbxcloud experience publish --filename game.rbxl --place-id 129122438210317 --universe-id 9969726968 --version-type published
+          rbxcloud experience publish --filename game.rbxl --place-id 129122438210317 --universe-id 9969726968 --version-type published --api-key ${{ secrets.ROBLOX_API_KEY }}
