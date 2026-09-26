@@ -2,6 +2,26 @@
 print("--- COMBAT SERVER SCRIPT IS RUNNING ---")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+-- TEMP: run once to discover animation IDs inside the punch pack model
+-- Remove this block once we have the real AnimationId(s).
+local InsertService = game:GetService("InsertService")
+
+local success, model = pcall(function()
+    return InsertService:LoadAsset(1206194659)
+end)
+
+if success and model then
+    for _, descendant in ipairs(model:GetDescendants()) do
+        if descendant:IsA("Animation") then
+            print("Found Animation:", descendant.Name, "-", descendant.AnimationId)
+        end
+    end
+    model:Destroy()
+else
+    warn("Failed to load asset:", model)
+end
+-- END TEMP BLOCK
+
 -- Ensure the RemoteEvent exists on the server
 local combatEvent = ReplicatedStorage:FindFirstChild("PerformAttackEvent")
 if not combatEvent then
