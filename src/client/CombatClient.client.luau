@@ -82,4 +82,57 @@ if player.Character then
 end
 player.CharacterAdded:Connect(setupCombatRig)
 
-local function
+local function playProceduralPunch(isRight)
+    if isPunching then return end
+    isPunching = true
+
+    local shoulder = isRight and rightShoulder or leftShoulder
+    local defaultCFrame = isR6 and (isRight and RIGHT_SHOULDER_DEFAULT_R6 or LEFT_SHOULDER_DEFAULT_R6) or (isRight and RIGHT_SHOULDER_DEFAULT_R15 or LEFT_SHOULDER_DEFAULT_R15)
+
+    if not shoulder then
+        print("ERROR: shoulder is nil, returning")
+        isPunching = false
+        return
+    end
+
+    -- Same punch angles work for both R6 and R15
+    local windupCFrame = defaultCFrame * CFrame.Angles(math.rad(-20), 0, math.rad(isRight and 10 or -10))
+    local punchCFrame = defaultCFrame * CFrame.Angles(math.rad(-160), 0, 0)
+
+    local windupTween = TweenService:Create(shoulder, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {C0 = windupCFrame})
+    local punchTween = TweenService:Create(shoulder, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {C0 = punchCFrame})
+    local returnTween = TweenService:Create(shoulder, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {C0 = defaultCFrame})
+
+    windupTween:Play()
+    windupTween.Completed:Wait()
+    punchTween:Play()
+    punchTween.Completed:Wait()
+    returnTween:Play()
+
+    isPunching = false
+end
+
+local function playPunchSound()
+    local char = player.Character
+    if not char then return end
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://112568860476160"
+    sound.Volume = 0.5
+    sound.Parent = char:FindFirstChild("HumanoidRootPart") or char
+    sound:Play()
+    game:GetService("Debris"):AddItem(sound, 2)
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    if input.KeyCode == Enum.KeyCode.E then
+        triggerCameraImpact()
+        task.spawn(playProceduralPunch, useRightPunch)
+        task.spawn(playPunchSound)
+        combatEvent:FireServer("LightPunch", useRightPunch)
+        useRightPunch = not useRightPunch
+    end
+end)
+
+print("CombatClient loaded and ready for R6 or R15")
