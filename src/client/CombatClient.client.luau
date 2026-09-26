@@ -1,10 +1,9 @@
 -- src/Client/CombatClient.client.luau
 print("--- COMBAT CLIENT SCRIPT IS RUNNING ---")
-local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local camera = workspace.CurrentCamera
 local player = Players.LocalPlayer
@@ -41,8 +40,7 @@ end)
 local useRightPunch = false
 local punchTrack = nil
 
--- TODO: replace this with the real AnimationId pulled from the R15 punch
--- pack via: strings punchpack.rbxm | grep -i "rbxassetid\|AnimationId"
+-- TODO: replace this with the real AnimationId pulled from the R15 punch pack
 local PUNCH_ANIMATION_ID = "rbxassetid://PASTE_REAL_ID_HERE"
 
 local function setupPunchAnimation(character)
@@ -61,29 +59,21 @@ if player.Character then
 end
 player.CharacterAdded:Connect(setupPunchAnimation)
 
-local function playPunchSound()
-    local char = player.Character
-    if not char then return end
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://112568860476160"
-    sound.Volume = 0.5
-    sound.Parent = char:FindFirstChild("HumanoidRootPart") or char
-    sound:Play()
-    game:GetService("Debris"):AddItem(sound, 2)
-end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-
-    if input.KeyCode == Enum.KeyCode.E then
+-- ContextActionService binds both a PC keybind (E) AND an automatic
+-- on-screen touch button on mobile, so punching works on both platforms
+-- with one binding. Punch sound is now handled server-side (in
+-- CombatServer.server.luau) so it replicates and everyone can hear it.
+local function handlePunchAction(actionName, inputState, inputObject)
+    if inputState == Enum.UserInputState.Begin then
         triggerCameraImpact()
         if punchTrack then
             punchTrack:Play()
         end
-        task.spawn(playPunchSound)
         combatEvent:FireServer("LightPunch", useRightPunch)
         useRightPunch = not useRightPunch
     end
-end)
+end
+
+ContextActionService:BindAction("PunchAction", handlePunchAction, true, Enum.KeyCode.E)
 
 print("CombatClient loaded and ready")

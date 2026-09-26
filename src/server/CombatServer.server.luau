@@ -3,7 +3,8 @@ print("--- COMBAT SERVER SCRIPT IS RUNNING ---")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- TEMP: run once to discover animation IDs inside the punch pack model
--- Remove this block once we have the real AnimationId(s).
+-- Remove this block once we have the real AnimationId(s) and CombatClient
+-- has been updated with the real PUNCH_ANIMATION_ID.
 local InsertService = game:GetService("InsertService")
 
 local success, model = pcall(function()
@@ -28,6 +29,20 @@ if not combatEvent then
     combatEvent = Instance.new("RemoteEvent")
     combatEvent.Name = "PerformAttackEvent"
     combatEvent.Parent = ReplicatedStorage
+end
+
+-- Play the punch sound on the server so it replicates to every client,
+-- parented to the puncher's own character so it comes from the right position.
+local function playPunchSound(character)
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return end
+
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://112568860476160"
+    sound.Volume = 0.5
+    sound.Parent = rootPart
+    sound:Play()
+    game:GetService("Debris"):AddItem(sound, 2)
 end
 
 local function createPunchEffect(targetPosition)
@@ -78,8 +93,9 @@ combatEvent.OnServerEvent:Connect(function(player, attackType, isRight)
     local sideOffset = isRight and (rootPart.CFrame.RightVector * 1.2) or (rootPart.CFrame.RightVector * -1.2)
     local hitPos = rootPart.Position + (rootPart.CFrame.LookVector * 4) + sideOffset
 
-    -- Trigger visual effects
+    -- Trigger visual effects and audio
     createPunchEffect(hitPos)
+    playPunchSound(character)
 
     -- Hit detection for other players
     for _, otherPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
