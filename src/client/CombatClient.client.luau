@@ -49,32 +49,28 @@ local RIGHT_SHOULDER_DEFAULT_R15 = CFrame.new(0.5, 0, 0)
 local LEFT_SHOULDER_DEFAULT_R15 = CFrame.new(-0.5, 0, 0)
 
 local function setupCombatRig(character)
-    print("Character children:", character:GetChildren())
     print("Setting up rig for character:", character.Name)
 
-    -- Try R6 first (look for Torso)
-    local torso = character:FindFirstChild("Torso")
-    if torso then
+    local humanoid = character:WaitForChild("Humanoid")
+    local rigType = humanoid.RigType
+
+    if rigType == Enum.HumanoidRigType.R6 then
         print("R6 rig detected")
         isR6 = true
+        local torso = character:WaitForChild("Torso")
         rightShoulder = torso:WaitForChild("Right Shoulder")
         leftShoulder = torso:WaitForChild("Left Shoulder")
         print("R6 shoulders found")
-        return
-    end
-
-    -- Fall back to R15 (look for UpperTorso)
-    local upperTorso = character:FindFirstChild("UpperTorso")
-    if upperTorso then
+    elseif rigType == Enum.HumanoidRigType.R15 then
         print("R15 rig detected")
         isR6 = false
+        local upperTorso = character:WaitForChild("UpperTorso")
         rightShoulder = upperTorso:WaitForChild("RightShoulder")
         leftShoulder = upperTorso:WaitForChild("LeftShoulder")
         print("R15 shoulders found")
-        return
+    else
+        print("ERROR: Unknown rig type:", rigType)
     end
-
-    print("ERROR: Neither R6 Torso nor R15 UpperTorso found!")
 end
 
 if player.Character then
