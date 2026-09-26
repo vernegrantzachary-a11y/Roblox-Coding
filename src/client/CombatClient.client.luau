@@ -54,11 +54,15 @@ task.spawn(function()
     local leftAnim = Instance.new("Animation")
     leftAnim.AnimationId = "rbxassetid://913376220"
     leftAnimTrack = animator:LoadAnimation(leftAnim)
+    leftAnimTrack.Priority = Enum.AnimationPriority.Action
+    leftAnimTrack.Looped = false
 
     -- Load Right Punch Animation
     local rightAnim = Instance.new("Animation")
     rightAnim.AnimationId = "rbxassetid://913372543"
     rightAnimTrack = animator:LoadAnimation(rightAnim)
+    rightAnimTrack.Priority = Enum.AnimationPriority.Action
+    rightAnimTrack.Looped = false
 end)
 
 -- Direct Input Listener for 'E' Key

@@ -49,17 +49,18 @@ local function createPunchEffect(targetPosition)
     end)
 end
 
-combatEvent.OnServerEvent:Connect(function(player, attackType)
+combatEvent.OnServerEvent:Connect(function(player, attackType, isRight)
     local character = player.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     
     local rootPart = character.HumanoidRootPart
     
-    -- Spawn effect in front of the player
-    local hitPos = rootPart.Position + (rootPart.CFrame.LookVector * 4)
+    -- Alternate particle offset side based on left/right combo state
+    local sideOffset = isRight and (rootPart.CFrame.RightVector * 1.2) or (rootPart.CFrame.RightVector * -1.2)
+    local hitPos = rootPart.Position + (rootPart.CFrame.LookVector * 4) + sideOffset
     createPunchEffect(hitPos)
     
-    -- Hit detection logic
+    -- Hit detection for other players
     for _, otherPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
         if otherPlayer ~= player and otherPlayer.Character then
             local otherRoot = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -70,6 +71,22 @@ combatEvent.OnServerEvent:Connect(function(player, attackType)
                 if distance <= 8 then
                     humanoid:TakeDamage(10)
                     print(player.Name .. " successfully punched " .. otherPlayer.Name)
+                end
+            end
+        end
+    end
+
+    -- Hit detection for the Training Dummy model in workspace
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj.Name == "TrainingDummy" then
+            local dummyRoot = obj:FindFirstChild("HumanoidRootPart")
+            local dummyHumanoid = obj:FindFirstChildOfClass("Humanoid")
+            
+            if dummyRoot and dummyHumanoid then
+                local distance = (rootPart.Position - dummyRoot.Position).Magnitude
+                if distance <= 8 then
+                    dummyHumanoid:TakeDamage(10)
+                    print(player.Name .. " successfully punched the TrainingDummy!")
                 end
             end
         end
