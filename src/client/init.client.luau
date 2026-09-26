@@ -1,6 +1,6 @@
 -- src/Client/CombatClient.client.luau
 print("--- COMBAT CLIENT SCRIPT IS RUNNING ---")
-
+print("CLIENT SCRIPT LOADED AND RUNNING")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
