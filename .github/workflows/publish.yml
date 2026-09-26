@@ -18,7 +18,7 @@ jobs:
       - name: Build and Publish place to Roblox Cloud
         run: |
           rojo build --output game.rbxl
-          rbxcloud place publish \
+          rbxcloud place upload \
             --file game.rbxl \
             --place-id 129122438210317 \
             --universe-id 9969726968 \
