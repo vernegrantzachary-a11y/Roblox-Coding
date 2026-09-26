@@ -76,4 +76,9 @@ end
 
 ContextActionService:BindAction("PunchAction", handlePunchAction, true, Enum.KeyCode.E)
 
+-- Give the mobile touch button a label and reposition it so it doesn't
+-- overlap the default Jump button (bottom-right). Nudge left and up.
+ContextActionService:SetTitle("PunchAction", "Punch")
+ContextActionService:SetPosition("PunchAction", UDim2.new(1, -200, 1, -120))
+
 print("CombatClient loaded and ready")
