@@ -4,6 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local camera = workspace.CurrentCamera
 local player = Players.LocalPlayer
@@ -15,7 +16,7 @@ if not combatEvent then
     combatEvent.Parent = ReplicatedStorage
 end
 
--- Camera Shake Setup
+-- Camera Shake Setup (runs after Roblox's own camera update each frame)
 local shakeIntensity = 0.25
 local shakeDuration = 0.15
 local shakeTimer = 0
@@ -24,7 +25,7 @@ local function triggerCameraImpact()
     shakeTimer = shakeDuration
 end
 
-RunService.RenderStepped:Connect(function(dt)
+RunService:BindToRenderStep("CombatCameraShake", Enum.RenderPriority.Camera.Value + 1, function(dt)
     if shakeTimer > 0 then
         shakeTimer = shakeTimer - dt
         local currentIntensity = shakeIntensity * (shakeTimer / shakeDuration)
@@ -37,52 +38,54 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
--- Combat Animation Setup with Clean Combat IDs & Maximum Action Priority
-local leftAnimTrack: AnimationTrack = nil
-local rightAnimTrack: AnimationTrack = nil
+-- Procedural Punch Setup (R6 Motor6D manipulation — no animation assets needed)
+local rightShoulder: Motor6D = nil
+local leftShoulder: Motor6D = nil
 local useRightPunch = false
+local isPunching = false
 
-task.spawn(function()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    local animator = humanoid:WaitForChild("Animator")
+local RIGHT_SHOULDER_DEFAULT = CFrame.new(1, 0.5, 0)
+local LEFT_SHOULDER_DEFAULT = CFrame.new(-1, 0.5, 0)
 
-    -- Left Jab / Punch ID (Action4 overrides custom bundles)
-    local leftAnim = Instance.new("Animation")
-    leftAnim.AnimationId = "rbxassetid://10468665991" 
-    leftAnimTrack = animator:LoadAnimation(leftAnim)
-    leftAnimTrack.Priority = Enum.AnimationPriority.Action4
-    leftAnimTrack.Looped = false
+local function setupCombatRig(character)
+    local torso = character:WaitForChild("Torso")
+    rightShoulder = torso:WaitForChild("Right Shoulder")
+    leftShoulder = torso:WaitForChild("Left Shoulder")
+end
 
-    -- Right Cross / Punch ID (Action4 overrides custom bundles)
-    local rightAnim = Instance.new("Animation")
-    rightAnim.AnimationId = "rbxassetid://13532562418" 
-    rightAnimTrack = animator:LoadAnimation(rightAnim)
-    rightAnimTrack.Priority = Enum.AnimationPriority.Action4
-    rightAnimTrack.Looped = false
-end)
+if player.Character then
+    setupCombatRig(player.Character)
+end
+player.CharacterAdded:Connect(setupCombatRig)
+
+local function playProceduralPunch(isRight)
+    if isPunching then return end
+    isPunching = true
+
+    local shoulder = isRight and rightShoulder or leftShoulder
+    local defaultCFrame = isRight and RIGHT_SHOULDER_DEFAULT or LEFT_SHOULDER_DEFAULT
+    if not shoulder then
+        isPunching = false
+        return
+    end
+
+    local windupCFrame = defaultCFrame * CFrame.Angles(math.rad(-20), 0, math.rad(isRight and 10 or -10))
+    local punchCFrame = defaultCFrame * CFrame.Angles(math.rad(-160), 0, 0)
+
+    local windupTween = TweenService:Create(shoulder, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {C0 = windupCFrame})
+    local punchTween = TweenService:Create(shoulder, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {C0 = punchCFrame})
+    local returnTween = TweenService:Create(shoulder, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {C0 = defaultCFrame})
+
+    windupTween:Play()
+    windupTween.Completed:Wait()
+    punchTween:Play()
+    punchTween.Completed:Wait()
+    returnTween:Play()
+
+    isPunching = false
+end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    
+
     if input.KeyCode == Enum.KeyCode.E then
-        print("E key pressed locally!")
-        triggerCameraImpact()
-
-        -- Play alternating punch tracks cleanly
-        if useRightPunch then
-            if rightAnimTrack then
-                leftAnimTrack:Stop(0.1) -- Stop opposite track to prevent blending locks
-                rightAnimTrack:Play(0.1, 1, 1.2) -- Slight speed boost for snappiness
-            end
-        else
-            if leftAnimTrack then
-                rightAnimTrack:Stop(0.1)
-                leftAnimTrack:Play(0.1, 1, 1.2)
-            end
-        end
-
-        combatEvent:FireServer("LightPunch", useRightPunch)
-        useRightPunch = not useRightPunch
-    end
-end)
