@@ -10,26 +10,51 @@ if not combatEvent then
     combatEvent.Parent = ReplicatedStorage
 end
 
+local function createPunchEffect(targetPosition)
+    local effectPart = Instance.new("Part")
+    effectPart.Size = Vector3.new(1, 1, 1)
+    effectPart.Transparency = 1
+    effectPart.Anchored = true
+    effectPart.CanCollide = false
+    effectPart.Position = targetPosition
+    effectPart.Parent = workspace
+
+    local attachment = Instance.new("Attachment")
+    attachment.Parent = effectPart
+
+    local emitter = Instance.new("ParticleEmitter")
+    emitter.Texture = "rbxassetid://258129463"
+    emitter.Color = ColorSequence.new(Color3.fromRGB(255, 200, 50), Color3.fromRGB(255, 50, 50))
+    emitter.Size = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.5),
+        NumberSequenceKeypoint.new(1, 3)
+    })
+    emitter.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(1, 1)
+    })
+    emitter.Speed = NumberRange.new(15, 25)
+    emitter.SpreadAngle = Vector2.new(45, 45)
+    emitter.Lifetime = NumberRange.new(0.2, 0.4)
+    emitter.Rate = 0
+    emitter.Parent = attachment
+
+    emitter:Emit(25)
+
+    task.delay(0.5, function()
+        effectPart:Destroy()
+    end)
+end
+
 combatEvent.OnServerEvent:Connect(function(player, attackType)
     local character = player.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     
     local rootPart = character.HumanoidRootPart
     
-    -- HIGH VISUAL, LOW COST: Spawn a quick neon punch flash in front of the player
-    local fxPart = Instance.new("Part")
-    fxPart.Size = Vector3.new(4, 4, 4)
-    fxPart.CFrame = rootPart.CFrame + (rootPart.CFrame.LookVector * 4)
-    fxPart.Anchored = true
-    fxPart.CanCollide = false
-    fxPart.Material = Enum.Material.Neon
-    fxPart.Color = Color3.fromRGB(0, 255, 60) -- Neon green theme
-    fxPart.Parent = workspace
-    
-    -- Lightweight cleanup: destroy the effect right after
-    task.delay(0.12, function()
-        fxPart:Destroy()
-    end)
+    -- Spawn the particle effect burst in front of the player
+    local hitPos = rootPart.Position + (rootPart.CFrame.LookVector * 4)
+    createPunchEffect(hitPos)
     
     -- Simple hit detection check in front of the player
     for _, otherPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
