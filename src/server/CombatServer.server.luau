@@ -10,28 +10,6 @@ if not combatEvent then
     combatEvent.Parent = ReplicatedStorage
 end
 
--- Play a crunchy impact sound at the hit location
-local function playPunchSound(targetPosition)
-    local soundPart = Instance.new("Part")
-    soundPart.Size = Vector3.new(1, 1, 1)
-    soundPart.Transparency = 1
-    soundPart.Anchored = true
-    soundPart.CanCollide = false
-    soundPart.Position = targetPosition
-    soundPart.Parent = workspace
-
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://906149449" -- Standard impact/punch sound
-    sound.Volume = 1.5
-    sound.Parent = soundPart
-    sound:Play()
-
-    -- Clean up after sound finishes playing
-    task.delay(1, function()
-        soundPart:Destroy()
-    end)
-end
-
 local function createPunchEffect(targetPosition)
     local effectPart = Instance.new("Part")
     effectPart.Size = Vector3.new(1, 1, 1)
@@ -73,23 +51,22 @@ end
 combatEvent.OnServerEvent:Connect(function(player, attackType, isRight)
     local character = player.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-    
+
     local rootPart = character.HumanoidRootPart
-    
+
     -- Alternate particle offset side based on left/right combo state
     local sideOffset = isRight and (rootPart.CFrame.RightVector * 1.2) or (rootPart.CFrame.RightVector * -1.2)
     local hitPos = rootPart.Position + (rootPart.CFrame.LookVector * 4) + sideOffset
-    
-    -- Trigger visual effects and audio
+
+    -- Trigger visual effects
     createPunchEffect(hitPos)
-    playPunchSound(hitPos)
-    
+
     -- Hit detection for other players
     for _, otherPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
         if otherPlayer ~= player and otherPlayer.Character then
             local otherRoot = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
             local humanoid = otherPlayer.Character:FindFirstChildOfClass("Humanoid")
-            
+
             if otherRoot and humanoid then
                 local distance = (rootPart.Position - otherRoot.Position).Magnitude
                 if distance <= 8 then
@@ -105,7 +82,7 @@ combatEvent.OnServerEvent:Connect(function(player, attackType, isRight)
         if obj:IsA("Model") and obj.Name == "TrainingDummy" then
             local dummyRoot = obj:FindFirstChild("HumanoidRootPart")
             local dummyHumanoid = obj:FindFirstChildOfClass("Humanoid")
-            
+
             if dummyRoot and dummyHumanoid then
                 local distance = (rootPart.Position - dummyRoot.Position).Magnitude
                 if distance <= 8 then

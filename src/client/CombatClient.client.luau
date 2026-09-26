@@ -1,95 +1,85 @@
--- src/Server/CombatServer.server.luau
-print("--- COMBAT SERVER SCRIPT IS RUNNING ---")
+-- src/Client/CombatClient.client.luau
+print("--- COMBAT CLIENT SCRIPT IS RUNNING ---")
+local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
--- Ensure the RemoteEvent exists on the server
-local combatEvent = ReplicatedStorage:FindFirstChild("PerformAttackEvent")
-if not combatEvent then
-    combatEvent = Instance.new("RemoteEvent")
-    combatEvent.Name = "PerformAttackEvent"
-    combatEvent.Parent = ReplicatedStorage
+local camera = workspace.CurrentCamera
+local player = Players.LocalPlayer
+
+-- IMPORTANT: only WAIT for the RemoteEvent here. Never create it on the client —
+-- an Instance.new() on a LocalScript is local-only and does NOT replicate to the
+-- server.
+local combatEvent = ReplicatedStorage:WaitForChild("PerformAttackEvent")
+
+-- Camera Shake Setup
+local shakeIntensity = 0.25
+local shakeDuration = 0.15
+local shakeTimer = 0
+
+local function triggerCameraImpact()
+    shakeTimer = shakeDuration
 end
 
-local function createPunchEffect(targetPosition)
-    local effectPart = Instance.new("Part")
-    effectPart.Size = Vector3.new(1, 1, 1)
-    effectPart.Transparency = 1
-    effectPart.Anchored = true
-    effectPart.CanCollide = false
-    effectPart.Position = targetPosition
-    effectPart.Parent = workspace
-
-    local attachment = Instance.new("Attachment")
-    attachment.Parent = effectPart
-
-    local emitter = Instance.new("ParticleEmitter")
-    emitter.Texture = "rbxassetid://1084889503"
-    emitter.Color = ColorSequence.new(Color3.fromRGB(0, 255, 120), Color3.fromRGB(0, 150, 255)) -- Cyan/Green anime impact
-    emitter.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.8),
-        NumberSequenceKeypoint.new(1, 2.5)
-    })
-    emitter.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.1),
-        NumberSequenceKeypoint.new(1, 1)
-    })
-    emitter.Speed = NumberRange.new(10, 20)
-    emitter.SpreadAngle = Vector2.new(60, 60)
-    emitter.Lifetime = NumberRange.new(0.2, 0.4)
-    emitter.Rate = 0
-    emitter.Parent = attachment
-
-    -- Fire a clean burst
-    emitter:Emit(30)
-
-    -- Quick cleanup
-    task.delay(0.5, function()
-        effectPart:Destroy()
-    end)
-end
-
-combatEvent.OnServerEvent:Connect(function(player, attackType, isRight)
-    local character = player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-    local rootPart = character.HumanoidRootPart
-
-    -- Alternate particle offset side based on left/right combo state
-    local sideOffset = isRight and (rootPart.CFrame.RightVector * 1.2) or (rootPart.CFrame.RightVector * -1.2)
-    local hitPos = rootPart.Position + (rootPart.CFrame.LookVector * 4) + sideOffset
-
-    -- Trigger visual effects
-    createPunchEffect(hitPos)
-
-    -- Hit detection for other players
-    for _, otherPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
-        if otherPlayer ~= player and otherPlayer.Character then
-            local otherRoot = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
-            local humanoid = otherPlayer.Character:FindFirstChildOfClass("Humanoid")
-
-            if otherRoot and humanoid then
-                local distance = (rootPart.Position - otherRoot.Position).Magnitude
-                if distance <= 8 then
-                    humanoid:TakeDamage(10)
-                    print(player.Name .. " successfully punched " .. otherPlayer.Name)
-                end
-            end
-        end
-    end
-
-    -- Hit detection for the Training Dummy model in workspace
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("Model") and obj.Name == "TrainingDummy" then
-            local dummyRoot = obj:FindFirstChild("HumanoidRootPart")
-            local dummyHumanoid = obj:FindFirstChildOfClass("Humanoid")
-
-            if dummyRoot and dummyHumanoid then
-                local distance = (rootPart.Position - dummyRoot.Position).Magnitude
-                if distance <= 8 then
-                    dummyHumanoid:TakeDamage(10)
-                    print(player.Name .. " successfully punched the TrainingDummy!")
-                end
-            end
-        end
+RunService:BindToRenderStep("CombatCameraShake", Enum.RenderPriority.Camera.Value + 1, function(dt)
+    if shakeTimer > 0 then
+        shakeTimer = shakeTimer - dt
+        local currentIntensity = shakeIntensity * (shakeTimer / shakeDuration)
+        local randomOffset = Vector3.new(
+            math.random() * 2 - 1,
+            math.random() * 2 - 1,
+            0
+        ) * currentIntensity
+        camera.CFrame = camera.CFrame * CFrame.Angles(randomOffset.X * 0.05, randomOffset.Y * 0.05, 0)
     end
 end)
+
+-- Adaptive Punch Setup (R6 or R15 auto-detect)
+local rightShoulder: Motor6D = nil
+local leftShoulder: Motor6D = nil
+local useRightPunch = false
+local isPunching = false
+local isR6 = false
+
+local RIGHT_SHOULDER_DEFAULT_R6 = CFrame.new(1, 0.5, 0)
+local LEFT_SHOULDER_DEFAULT_R6 = CFrame.new(-1, 0.5, 0)
+local RIGHT_SHOULDER_DEFAULT_R15 = CFrame.new(0.5, 0, 0)
+local LEFT_SHOULDER_DEFAULT_R15 = CFrame.new(-0.5, 0, 0)
+
+local function setupCombatRig(character)
+    print("Character children:", character:GetChildren())
+    print("Setting up rig for character:", character.Name)
+
+    -- Try R6 first (look for Torso)
+    local torso = character:FindFirstChild("Torso")
+    if torso then
+        print("R6 rig detected")
+        isR6 = true
+        rightShoulder = torso:WaitForChild("Right Shoulder")
+        leftShoulder = torso:WaitForChild("Left Shoulder")
+        print("R6 shoulders found")
+        return
+    end
+
+    -- Fall back to R15 (look for UpperTorso)
+    local upperTorso = character:FindFirstChild("UpperTorso")
+    if upperTorso then
+        print("R15 rig detected")
+        isR6 = false
+        rightShoulder = upperTorso:WaitForChild("RightShoulder")
+        leftShoulder = upperTorso:WaitForChild("LeftShoulder")
+        print("R15 shoulders found")
+        return
+    end
+
+    print("ERROR: Neither R6 Torso nor R15 UpperTorso found!")
+end
+
+if player.Character then
+    setupCombatRig(player.Character)
+end
+player.CharacterAdded:Connect(setupCombatRig)
+
+local function
