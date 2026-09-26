@@ -17,12 +17,11 @@ jobs:
 
       - name: Build place with Rojo
         run: rojo build --output game.rbxl
-
-      - name: Publish place to Roblox Cloud
+            - name: Publish place to Roblox Cloud
         run: |
           rbxcloud experience publish \
-            --api-key "${{ secrets.Roblox_API_Key }}" \
-            --universe-id "${{ secrets.UNIVERSE_ID }}" \
-            --place-id "${{ secrets.PLACE_ID }}" \
+            --api-key "${{ secrets.ROBLOX_API_KEY }}" \
+            --universe-id "${{ secrets.ROBLOX_UNIVERSE_ID }}" \
+            --place-id "${{ secrets.ROBLOX_PLACE_ID }}" \
             --version-type Published \
             --filename game.rbxl
