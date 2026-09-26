@@ -15,8 +15,8 @@ jobs:
       - name: Setup Aftman Tools
         uses: ok-nick/setup-aftman@v0.4.2
 
-      - name: Check rbxcloud place subcommands
-        run: rbxcloud place --help
+      - name: Check rbxcloud top-level commands
+        run: rbxcloud --help
 
       - name: Build and Publish place to Roblox Cloud
         run: |
