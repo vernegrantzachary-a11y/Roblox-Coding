@@ -51,20 +51,31 @@ local LEFT_SHOULDER_DEFAULT_R15 = CFrame.new(-0.5, 0, 0)
 local function setupCombatRig(character)
     print("Setting up rig for character:", character.Name)
 
-    -- TEMP FULL DEBUG: find every Motor6D anywhere in the character
-    for _, descendant in ipairs(character:GetDescendants()) do
-        if descendant:IsA("Motor6D") then
-            print("Motor6D found:", descendant.Name, "| Parent:", descendant.Parent.Name)
-        end
-    end
-
     local humanoid = character:WaitForChild("Humanoid")
     print("RigType:", humanoid.RigType)
 
-    -- Original detection logic left in place below so the punch pipeline
-    -- still attempts a normal setup once we know the real joint names.
-    local rigType = humanoid.RigType
+    -- Retry scanning for Motor6Ds until they actually exist, up to 5 seconds
+    local attempts = 0
+    local motors = {}
+    repeat
+        motors = {}
+        for _, descendant in ipairs(character:GetDescendants()) do
+            if descendant:IsA("Motor6D") then
+                table.insert(motors, descendant)
+            end
+        end
+        if #motors == 0 then
+            attempts = attempts + 1
+            task.wait(0.1)
+        end
+    until #motors > 0 or attempts >= 50
 
+    print("Found", #motors, "Motor6D(s) after", attempts, "attempts")
+    for _, m in ipairs(motors) do
+        print("Motor6D:", m.Name, "| Parent:", m.Parent.Name)
+    end
+
+    local rigType = humanoid.RigType
     if rigType == Enum.HumanoidRigType.R6 then
         isR6 = true
         local torso = character:WaitForChild("Torso")
