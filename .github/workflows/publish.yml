@@ -16,8 +16,8 @@ jobs:
         uses: ok-nick/setup-aftman@v0.4.2
 
       - name: Build place with Rojo
-        run: rojo build --output game.rbxl
-            - name: Publish place to Roblox Cloud
+        run: rojo build --output game.rbxl      
+        - name: Publish place to Roblox Cloud
         run: |
           rbxcloud experience publish \
             --api-key "${{ secrets.ROBLOX_API_KEY }}" \
