@@ -62,8 +62,8 @@ spawnLocation.BrickColor = BrickColor.new("Deep blue")
 spawnLocation.Material = Enum.Material.Neon
 spawnLocation.Parent = mapFolder
 
--- Gameplay: Interactive Target Dummy using a standard Roblox character model + Health Bar
-task.spawn(function()
+-- Gameplay: Interactive Target Dummy with Auto-Respawn Logic
+local function spawnTrainingDummy()
     local success, dummyModel = pcall(function()
         return game:GetService("Players"):CreateHumanoidModelFromUserId(1)
     end)
@@ -116,14 +116,27 @@ task.spawn(function()
                     local healthPercent = math.clamp(newHealth / humanoid.MaxHealth, 0, 1)
                     healthBar.Size = UDim2.new(healthPercent, 0, 1, 0)
                 end)
+
+                -- Auto-respawn when the dummy is defeated
+                humanoid.Died:Connect(function()
+                    task.delay(3, function()
+                        if dummyModel then
+                            dummyModel:Destroy()
+                        end
+                        spawnTrainingDummy()
+                    end)
+                end)
             end
         end
 
         dummyModel.Parent = mapFolder
-        print("Successfully loaded standard Roblox avatar dummy with health bar!")
+        print("Successfully loaded standard Roblox avatar dummy with health bar and auto-respawn!")
     else
         print("Failed to load avatar dummy model.")
     end
-end)
+end
 
-print("Arena generated with spawn point and avatar target dummy.")
+-- Initial spawn call
+spawnTrainingDummy()
+
+print("Arena generated with spawn point and auto-respawning avatar target dummy.")
