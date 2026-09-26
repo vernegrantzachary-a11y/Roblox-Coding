@@ -21,7 +21,7 @@ jobs:
       - name: Publish place to Roblox Cloud
         run: |
           rbxcloud experience publish \
-            --api-key "${{ secrets.RBXCLOUD_API_KEY }}" \
+            --api-key "${{ secrets.Roblox_API_Key }}" \
             --universe-id "${{ secrets.UNIVERSE_ID }}" \
             --place-id "${{ secrets.PLACE_ID }}" \
             --version-type Published \
