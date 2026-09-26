@@ -15,10 +15,14 @@ jobs:
       - name: Setup Aftman Tools
         uses: ok-nick/setup-aftman@v0.4.2
 
-      - name: Check rbxcloud universe subcommands
-        run: rbxcloud universe --help
+      - name: Build place with Rojo
+        run: rojo build --output game.rbxl
 
-      - name: Build and Publish place to Roblox Cloud
+      - name: Publish place to Roblox Cloud
         run: |
-          rojo build --output game.rbxl
-          echo "Waiting for rbxcloud command info..."
+          rbxcloud experience publish \
+            --api-key "${{ secrets.RBXCLOUD_API_KEY }}" \
+            --universe-id "${{ secrets.UNIVERSE_ID }}" \
+            --place-id "${{ secrets.PLACE_ID }}" \
+            --version-type Published \
+            --filename game.rbxl
