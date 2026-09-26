@@ -51,53 +51,30 @@ local LEFT_SHOULDER_DEFAULT_R15 = CFrame.new(-0.5, 0, 0)
 local function setupCombatRig(character)
     print("Setting up rig for character:", character.Name)
 
+    -- TEMP FULL DEBUG: find every Motor6D anywhere in the character
+    for _, descendant in ipairs(character:GetDescendants()) do
+        if descendant:IsA("Motor6D") then
+            print("Motor6D found:", descendant.Name, "| Parent:", descendant.Parent.Name)
+        end
+    end
+
     local humanoid = character:WaitForChild("Humanoid")
+    print("RigType:", humanoid.RigType)
+
+    -- Original detection logic left in place below so the punch pipeline
+    -- still attempts a normal setup once we know the real joint names.
     local rigType = humanoid.RigType
 
     if rigType == Enum.HumanoidRigType.R6 then
-        print("R6 rig detected")
         isR6 = true
         local torso = character:WaitForChild("Torso")
-
-        local attempts = 0
-        repeat
-            rightShoulder = torso:FindFirstChild("Right Shoulder")
-            leftShoulder = torso:FindFirstChild("Left Shoulder")
-            if not rightShoulder or not leftShoulder then
-                attempts = attempts + 1
-                task.wait(0.1)
-            end
-        until (rightShoulder and leftShoulder) or attempts >= 50
-
-        if rightShoulder and leftShoulder then
-            print("R6 shoulders found after", attempts, "attempts")
-        else
-            print("ERROR: R6 shoulders never appeared after waiting")
-        end
-
+        rightShoulder = torso:FindFirstChild("Right Shoulder")
+        leftShoulder = torso:FindFirstChild("Left Shoulder")
     elseif rigType == Enum.HumanoidRigType.R15 then
-        print("R15 rig detected")
         isR6 = false
         local upperTorso = character:WaitForChild("UpperTorso")
-
-        local attempts = 0
-        repeat
-            rightShoulder = upperTorso:FindFirstChild("RightShoulder")
-            leftShoulder = upperTorso:FindFirstChild("LeftShoulder")
-            if not rightShoulder or not leftShoulder then
-                attempts = attempts + 1
-                task.wait(0.1)
-            end
-        until (rightShoulder and leftShoulder) or attempts >= 50
-
-        if rightShoulder and leftShoulder then
-            print("R15 shoulders found after", attempts, "attempts")
-        else
-            print("ERROR: R15 shoulders never appeared after waiting")
-        end
-
-    else
-        print("ERROR: Unknown rig type:", rigType)
+        rightShoulder = upperTorso:FindFirstChild("RightShoulder")
+        leftShoulder = upperTorso:FindFirstChild("LeftShoulder")
     end
 end
 
@@ -159,5 +136,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("CombatClient loaded and ready for R6 or R15")
 print("CombatClient loaded and ready for R6 or R15")
