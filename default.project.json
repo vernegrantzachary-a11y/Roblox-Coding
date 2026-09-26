@@ -1,5 +1,5 @@
 {
-  "name": "MySharedRobloxGame",
+  "name": "EndmoreBattlegrounds",
   "tree": {
     "$className": "DataModel",
     "ServerScriptService": {
@@ -17,7 +17,8 @@
     "StarterPlayer": {
       "$className": "StarterPlayer",
       "StarterPlayerScripts": {
-       "$path": "src/client"
+        "$className": "StarterPlayerScripts",
+        "$path": "src/client"
       }
     }
   }
