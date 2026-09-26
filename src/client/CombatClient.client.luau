@@ -37,7 +37,7 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
--- Combat Animation Setup with Clean Combat IDs
+-- Combat Animation Setup with Clean Combat IDs & Maximum Action Priority
 local leftAnimTrack: AnimationTrack = nil
 local rightAnimTrack: AnimationTrack = nil
 local useRightPunch = false
@@ -47,18 +47,18 @@ task.spawn(function()
     local humanoid = character:WaitForChild("Humanoid")
     local animator = humanoid:WaitForChild("Animator")
 
-    -- Left Jab / Punch ID
+    -- Left Jab / Punch ID (Action4 overrides custom bundles)
     local leftAnim = Instance.new("Animation")
     leftAnim.AnimationId = "rbxassetid://10468665991" 
     leftAnimTrack = animator:LoadAnimation(leftAnim)
-    leftAnimTrack.Priority = Enum.AnimationPriority.Action
+    leftAnimTrack.Priority = Enum.AnimationPriority.Action4
     leftAnimTrack.Looped = false
 
-    -- Right Cross / Punch ID
+    -- Right Cross / Punch ID (Action4 overrides custom bundles)
     local rightAnim = Instance.new("Animation")
     rightAnim.AnimationId = "rbxassetid://13532562418" 
     rightAnimTrack = animator:LoadAnimation(rightAnim)
-    rightAnimTrack.Priority = Enum.AnimationPriority.Action
+    rightAnimTrack.Priority = Enum.AnimationPriority.Action4
     rightAnimTrack.Looped = false
 end)
 
