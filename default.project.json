@@ -10,8 +10,8 @@
           "Size": [512, 20, 512],
           "Position": [0, -10, 0],
           "Anchored": true,
-          "Material": "Grass",
-          "BrickColor": "Bright green"
+          "Material": "Plastic",
+          "BrickColor": "Medium stone grey"
         }
       }
     },
