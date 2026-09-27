@@ -11,7 +11,7 @@
           "Position": [0, -10, 0],
           "Anchored": true,
           "Material": "Plastic",
-          "BrickColor": "Medium stone grey"
+          "BrickColor": { "BrickColor": "Medium stone grey" }
         }
       }
     },
