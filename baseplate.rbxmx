@@ -20,13 +20,29 @@
 				<R21>0</R21>
 				<R22>1</R22>
 			</CoordinateFrame>
-			<Color3uint8 name="Color3uint8">10724259</Color3uint8>
+			<Color3uint8 name="Color3uint8">6381928</Color3uint8>
+			<token name="Material">256</token>
 			<string name="Name">Baseplate</string>
 			<Vector3 name="Size">
-				<X>512</X>
+				<X>2048</X>
 				<Y>20</Y>
-				<Z>512</Z>
+				<Z>2048</Z>
 			</Vector3>
 		</Properties>
+		<Item class="Texture" referent="RBX9876543210">
+			<Properties>
+				<string name="Name">Texture</string>
+				<token name="Face">1</token>
+				<Content name="Texture"><url>rbxassetid://6372755229</url></Content>
+				<float name="StudsPerTileU">16</float>
+				<float name="StudsPerTileV">16</float>
+				<Color3 name="Color3">
+					<R>1</R>
+					<G>1</G>
+					<B>1</B>
+				</Color3>
+				<float name="Transparency">0.8</float>
+			</Properties>
+		</Item>
 	</Item>
 </roblox>
