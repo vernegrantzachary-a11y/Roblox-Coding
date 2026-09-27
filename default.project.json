@@ -11,7 +11,7 @@
           "Position": [0, -10, 0],
           "Anchored": true,
           "Material": "Plastic",
-          "BrickColor": { "BrickColor": "Medium stone grey" }
+          "BrickColor": "Medium stone grey"
         }
       }
     },
@@ -30,9 +30,8 @@
     "StarterPlayer": {
       "$className": "StarterPlayer",
       "StarterPlayerScripts": {
-        "$className": "StarterPlayerScripts",
         "$path": "src/client"
       }
     }
   }
-}
+}gpush 
