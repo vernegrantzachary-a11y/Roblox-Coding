@@ -28,6 +28,8 @@
 				<Y>20</Y>
 				<Z>2048</Z>
 			</Vector3>
+			<token name="TopSurface">0</token>
+			<token name="BottomSurface">0</token>
 		</Properties>
 		<Item class="Texture" referent="RBX9876543210">
 			<Properties>
