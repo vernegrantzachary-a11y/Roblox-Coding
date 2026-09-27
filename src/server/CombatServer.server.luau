@@ -2,36 +2,17 @@ print("--- COMBAT SERVER SCRIPT IS RUNNING ---")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local SharedModules = ReplicatedStorage:WaitForChild("SharedModules")
-local ProceduralPunch = require(SharedModules:WaitForChild("ProceduralPunch"))
-local RigBuilder = require(SharedModules:WaitForChild("RigBuilder"))
-
--- TEMP: run once to discover animation IDs inside the punch pack model
-local InsertService = game:GetService("InsertService")
-
-local success, model = pcall(function()
-	return InsertService:LoadAsset(1206194659)
-end)
-
-if success and model then
-	for _, descendant in ipairs(model:GetDescendants()) do
-		if descendant:IsA("Animation") then
-			print("Found Animation:", descendant.Name, "-", descendant.AnimationId)
-		end
-	end
-	model:Destroy()
-else
-	warn("Failed to load asset:", model)
-end
--- END TEMP BLOCK
-
--- Ensure RemoteEvent exists
+-- Ensure RemoteEvent exists FIRST so client never gets stuck waiting
 local combatEvent = ReplicatedStorage:FindFirstChild("PerformAttackEvent")
 if not combatEvent then
 	combatEvent = Instance.new("RemoteEvent")
 	combatEvent.Name = "PerformAttackEvent"
 	combatEvent.Parent = ReplicatedStorage
 end
+
+local SharedModules = ReplicatedStorage:WaitForChild("SharedModules")
+local ProceduralPunch = require(SharedModules:WaitForChild("ProceduralPunch"))
+local RigBuilder = require(SharedModules:WaitForChild("RigBuilder"))
 
 -- Server Audio
 local function playPunchSound(character)
@@ -118,13 +99,23 @@ local function spawnTestDummy(spawnCFrame)
 	end)
 end
 
+-- Spawn dummy on character load
+local function onCharacterAdded(character)
+	local root = character:WaitForChild("HumanoidRootPart", 5)
+	if root then
+		spawnTestDummy(root.CFrame * CFrame.new(0, 0, -6))
+	end
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+	if player.Character then
+		onCharacterAdded(player.Character)
+	end
+	player.CharacterAdded:Connect(onCharacterAdded)
+end
+
 Players.PlayerAdded:Connect(function(player)
-	player.CharacterAdded:Connect(function(character)
-		local root = character:WaitForChild("HumanoidRootPart", 5)
-		if root then
-			spawnTestDummy(root.CFrame * CFrame.new(0, 0, -6))
-		end
-	end)
+	player.CharacterAdded:Connect(onCharacterAdded)
 end)
 
 -- Main Attack Handler
