@@ -15,6 +15,9 @@ jobs:
       - name: Setup Aftman Tools
         uses: ok-nick/setup-aftman@v0.4.2
 
+      - name: Debug - List files
+        run: ls -la
+
       - name: Build place with Rojo
         run: rojo build --output game.rbxl
 
