@@ -2,19 +2,6 @@
   "name": "EndmoreBattlegrounds",
   "tree": {
     "$className": "DataModel",
-    "Workspace": {
-      "$className": "Workspace",
-      "Baseplate": {
-        "$className": "Part",
-        "$properties": {
-          "Size": [512, 20, 512],
-          "Position": [0, -10, 0],
-          "Anchored": true,
-          "Material": "Plastic",
-          "BrickColor": "Medium stone grey"
-        }
-      }
-    },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "ServerScripts": {
@@ -34,4 +21,4 @@
       }
     }
   }
-}gpush 
+}
