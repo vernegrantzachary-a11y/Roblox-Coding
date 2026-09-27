@@ -129,4 +129,3 @@ combatEvent.OnServerEvent:Connect(function(player, attackType, isRight)
         end
     end
 end)
--- Hit detection for the Training Dummy model in workspace
