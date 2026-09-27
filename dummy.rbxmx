@@ -1,0 +1,144 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Model" referent="RBX_Noob">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<string name="Name">Dummy</string>
+			<CoordinateFrame name="WorldPivot">
+				<X>0</X><Y>3</Y><Z>0</Z>
+				<R00>1</R00><R01>0</R01><R02>0</R02>
+				<R10>0</R10><R11>1</R11><R12>0</R12>
+				<R20>0</R20><R21>0</R21><R22>1</R22>
+			</CoordinateFrame>
+		</Properties>
+		<Item class="Humanoid" referent="RBX_Humanoid">
+			<Properties>
+				<string name="Name">Humanoid</string>
+				<float name="Health">100</float>
+				<float name="MaxHealth">100</float>
+				<token name="RigType">1</token>
+				<token name="DisplayBodyPartType">0</token>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX_HumanoidRootPart">
+			<Properties>
+				<string name="Name">HumanoidRootPart</string>
+				<bool name="Anchored">true</bool>
+				<CoordinateFrame name="CFrame">
+					<X>0</X><Y>3</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>2</X><Y>2</Y><Z>1</Z></Vector3>
+				<float name="Transparency">1</float>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX_Head">
+			<Properties>
+				<string name="Name">Head</string>
+				<bool name="Anchored">false</bool>
+				<CoordinateFrame name="CFrame">
+					<X>0</X><Y>4.5</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>1.2</X><Y>1.2</Y><Z>1.2</Z></Vector3>
+				<Color3uint8 name="Color3uint8">16316664</Color3uint8>
+			</Properties>
+			<Item class="SpecialMesh" referent="RBX_HeadMesh">
+				<Properties>
+					<token name="MeshType">0</token>
+					<Vector3 name="Scale"><X>1.25</X><Y>1.25</Y><Z>1.25</Z></Vector3>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="Part" referent="RBX_UpperTorso">
+			<Properties>
+				<string name="Name">UpperTorso</string>
+				<bool name="Anchored">false</bool>
+				<CoordinateFrame name="CFrame">
+					<X>0</X><Y>3.2</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>2</X><Y>1</Y><Z>1</Z></Vector3>
+				<Color3uint8 name="Color3uint8">2322316</Color3uint8>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX_LowerTorso">
+			<Properties>
+				<string name="Name">LowerTorso</string>
+				<bool name="Anchored">false</bool>
+				<CoordinateFrame name="CFrame">
+					<X>0</X><Y>2.2</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>2</X><Y>1</Y><Z>1</Z></Vector3>
+				<Color3uint8 name="Color3uint8">2322316</Color3uint8>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX_LeftUpperArm">
+			<Properties>
+				<string name="Name">LeftUpperArm</string>
+				<bool name="Anchored">false</bool>
+				<CoordinateFrame name="CFrame">
+					<X>-1.5</X><Y>3.2</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>1</X><Y>1</Y><Z>1</Z></Vector3>
+				<Color3uint8 name="Color3uint8">16316664</Color3uint8>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX_RightUpperArm">
+			<Properties>
+				<string name="Name">RightUpperArm</string>
+				<bool name="Anchored">false</bool>
+				<CoordinateFrame name="CFrame">
+					<X>1.5</X><Y>3.2</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>1</X><Y>1</Y><Z>1</Z></Vector3>
+				<Color3uint8 name="Color3uint8">16316664</Color3uint8>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX_LeftUpperLeg">
+			<Properties>
+				<string name="Name">LeftUpperLeg</string>
+				<bool name="Anchored">false</bool>
+				<CoordinateFrame name="CFrame">
+					<X>-0.5</X><Y>1.2</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>1</X><Y>1</Y><Z>1</Z></Vector3>
+				<Color3uint8 name="Color3uint8">3847192</Color3uint8>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBX_RightUpperLeg">
+			<Properties>
+				<string name="Name">RightUpperLeg</string>
+				<bool name="Anchored">false</bool>
+				<CoordinateFrame name="CFrame">
+					<X>0.5</X><Y>1.2</Y><Z>0</Z>
+					<R00>1</R00><R01>0</R01><R02>0</R02>
+					<R10>0</R10><R11>1</R11><R12>0</R12>
+					<R20>0</R20><R21>0</R21><R22>1</R22>
+				</CoordinateFrame>
+				<Vector3 name="Size"><X>1</X><Y>1</Y><Z>1</Z></Vector3>
+				<Color3uint8 name="Color3uint8">3847192</Color3uint8>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
