@@ -2,6 +2,12 @@
   "name": "EndmoreBattlegrounds",
   "tree": {
     "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "Baseplate": {
+        "$path": "baseplate.rbxmx"
+      }
+    },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "ServerScripts": {
